@@ -1,1 +1,116 @@
 
+
+Comparable과 Comparator는 모두 인터페이스 (interface) 이다.
+즉, Comparable 혹은 Comparator을 사용하고자 한다면 인터페이스 내에 선언된 메소드를 '반드시 구현' 해야한다.
+
+Comparable 인터페이스에는 compareTo(To) 메소드 하나가 선언되어 있다. 이 말은 우리가 만약 Comparable을 사용하고자 한다면 compareTo 메소드를 재정의 (Override/구현)을 해주어야 한다는것!
+Comparator를 보면 선언 된 메소드가 많지만 우리가 실질적으로 구현해야 하는것은 compare(T o1, T o2) 이다.
+
+Comparable과 Comparator 두 인터페이스는 '객체를 비교할 수 있도록 만든다'
+우리는 primitive 타입의 실수변수의 경우 부등호를 갖고 두 변수를 비교할 수 있다. primitive type은 자바 자체에서 제공되기에 별다른 처리 없이 비교가 가능하다.
+즉, 기본 자료형이기 때문에 부등호로 쉽게 비교가 가능하다.
+
+민약에 객체라면???
+
+public class Test {
+	public static void main(String[] args)  {
+ 
+		Student a = new Student(17, 2);	// 17살 2반
+		Student b = new Student(18, 1);	// 18살 1반
+		
+		/*
+		   어떻게 비교..?
+		   
+		   if(a > b) ..?
+		 */
+		
+	}
+}
+ 
+class Student {
+ 
+	int age;			// 나이
+	int classNumber;	// 학급
+	
+	Student(int age, int classNumber) {
+		this.age = age;
+		this.classNumber = classNumber;
+	}
+}
+
+자, a학생과 b학생 두 객체를 생성했다.
+
+그럼 두 객체(a, b)를 어떻게 비교할 것인가? 부등호로 비교하려 하면, 나이(age)를 기준으로 비교되는 건가? 아니면 학급(classNumber)을 기준으로 비교되는 건가?
+이 부분이 포인트다. 본질적으로 객체는 사용자가 기준을 정해주지 않는 이상 어떤 객체가 더 높은 우선순위를 갖는지 판단 할 수가 없다. 어떤 사람은 나이를 기준으로 판단할테고, 
+또 다른 사람은 학급을 기준으로 판단하는 등 그 기준이 중구난방일 것이다.
+그래서 이러한 문제점을 해결하기 위해 바로 Comparable 또는 Comparator가 쓰인다는 것이다.
+
+그러면 Comparable과 Comparator의 역할은 비슷한 것 같은데 무슨 차이인 것일까?
+
+왜 Comparable의 compareTo(T o) 메소드는 파라미터(매개변수)가 한 개이고, Comparator의 compare(T o1, T o2) 메소드는 파라미터가 왜 두 개인 것일까?
+
+일단, 두 인터페이스를 구체적으로 알아보기에 앞서 먼저 정답부터 말하자면, Comparable은 "자기 자신과 매개변수 객체를 비교"하는 것이고, Comparator는 "두 매개변수 객체를 비교"한다는 것이다.
+
+쉽게 말하자면, Comparable은 자기 자신과 파라미터로 들어오는 객체를 비교하는 것이고, Comparator는 자기 자신의 상태가 어떻던 상관없이 파라미터로 들어오는 두 객체를 비교하는 것이다. 즉, 본질적으로 비교한다는 것 자체는 같지만, 비교 대상이 다르다는 것이다.
+또 다른 차이점이라면 Comparable은 lang패키지에 있기 때문에 import 를 해줄 필요가 없지만, Comparator는 util패키지에 있다.
+
+ 
+
+Comparable은 무엇이라고 했는가?
+
+"자기 자신과 매개변수 객체를 비교"한다고 했다. 
+
+다음과 같이 Comparable 인터페이스는 정의되어있다.
+public interface Comparable<T> {
+
+}
+
+ 
+
+쉽게 이야기 하자면, <T>는 하나의 객체 타입이 지정 될 자리라고 생각하면 된다. 
+즉, 여러분이 클래스를 만들 때, 기본적으로 사용 방법은 이렇다.
+public class ClassName implements Comparable<Type> { 
+ 
+/*
+  ...
+  code
+  ...
+ */
+	// 필수 구현 부분
+	@Override
+	public int compareTo(Type o) {
+		/*
+		 비교 구현
+		 */
+	}
+}
+
+이 때, 필수 구현 부분인 compareTo() 메소드가 바로 우리가 객체를 비교할 기준을 정의해주는 부분이 된다.
+
+쉽게 생각하면 이렇다. 여러분이 클래스를 만들 때, ClassName을 비교하고 싶을 것이다.
+
+아까 Comparable은 자기 자신과 매개변수 객체를 비교한다고 했다. 즉, 자기자신은 ClassName으로 생성한 객체 자신이 되고, 매개변수 객체는 ClassName.compareTo(o); 를 통해 들어온 파라미터 o가 비교 할 객체가 되는 것이다.
+예로 들어보자. 아까 Student클래스를 비교하고자 했으니 이를 위 방법에 맞게 적용하려면 어떻게 해야할까?
+
+일단, Student 클래스에 Comparable 을 implements 해야한다. 그리고 <> 사이에 들어갈 타입은 무엇일까? Student 객체와 또 다른 Student 객체를 비교하고 싶다면, <> 사이에 들어갈 타입 또한 Student가 되어야하지 않겠는가?
+즉, Type 은 Student로 바뀌게 된다.
+위를 다음과 같이 작성할 수 있겠다.
+
+class Student implements Comparable<Student> {
+ 
+	int age;			// 나이
+	int classNumber;	// 학급
+	
+	Student(int age, int classNumber) {
+		this.age = age;
+		this.classNumber = classNumber;
+	}
+	
+	@Override
+	public int compareTo(Student o) {
+		/*
+		 * 비교 구현
+		 */
+	}
+}
+https://st-lab.tistory.com/243 참고.
